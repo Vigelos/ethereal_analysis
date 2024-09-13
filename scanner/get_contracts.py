@@ -6,15 +6,8 @@ from web3 import Web3
 
 
 END_POINTS = {
-    "Merkle": "https://eth.merkle.io", # normal
-    "Ankr": "https://rpc.ankr.com/eth/6be4700d61bcc2c4fecf4dbbfcab2e672dd2df20584017477d7628debfdc50f4", # normal
-    "Alchemy": "https://eth-mainnet.g.alchemy.com/v2/8fQ58AhCoTWRQK8WT_PV0tH79wnTrJ99",
-    "Llama": "https://eth.llamarpc.com", # slow
-    "Tenderly": "https://mainnet.gateway.tenderly.co/5G6snCXHXFCDCv3S5PjluA", # very fast
-    "DRPC": "https://lb.drpc.org/ogrpc?network=ethereum&dkey=Asdkjr1IPUcBk0up5DK-s_rjUIfcNTcR76SyhkHL9tz4", # very fast
-    "ChainNode": "https://mainnet.chainnodes.org/d5e5cf0f-10be-4742-8b1a-779ae47b37e7", # very fast
-    "OnFinality": "https://eth.api.onfinality.io/public", # slow
-    "Infura": "https://mainnet.infura.io/v3/75b7bcce439246a18c6d879e0692fbf5" # normal
+    "Merkle": "https://eth.merkle.io",
+    #"Name": "URL"
 }
 
 def merge_csv(source_dir, dest_dir, file_name):
@@ -22,13 +15,6 @@ def merge_csv(source_dir, dest_dir, file_name):
     # filter out non-csv files
     files = [f for f in files if f.endswith(".csv")]
     df = pd.concat([pd.read_csv(os.path.join(source_dir, f)) for f in files])
-
-    # if the same name already exists, ask for confirmation
-    # if os.path.exists(os.path.join(dest_dir, file_name)):
-    #     print("The file {} already exists. Do you want to overwrite it?".format(file_name))
-    #     choice = input("Enter y/n: ")
-    #     if choice != "y":
-    #         return
 
     df.to_csv(os.path.join(dest_dir, file_name), index=False)
     
@@ -59,7 +45,7 @@ def get_code_web3(address, block_id, endpoint):
                 print(f"Error fetching contract code: {e}, skip this contract")
                 return "0x"
 
-def scan_blocks_web3(start_block_number, end_block_number, endpoint):
+def scan_blocks_web3(start_block_number, end_block_number, endpoint, endpoint_name):
     creation_transactions = []
 
     for block_id in range(start_block_number, end_block_number):
@@ -86,40 +72,27 @@ def scan_blocks_web3(start_block_number, end_block_number, endpoint):
                 
     # save the creation_transactions to a csv file
     df = pd.DataFrame(creation_transactions, columns=["block_number", "transaction_hash", "contract_address", "code"])
-    df.to_csv("e2_{}/{:08d}_to_{:08d}.csv".format(args.endpoint, start_block_number, end_block_number), index=False)
+    df.to_csv("{}/{:08d}_to_{:08d}.csv".format(endpoint_name, start_block_number, end_block_number), index=False)
 
-if __name__ == "__main__":
-
+def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--endpoint", type=str, help="The endpoint to use for the scan", default="Merkle")
-    parser.add_argument("--M", type=int, help="The x M block", default=0)
-    parser.add_argument("--e4Start", type=int, help="start from x0,000 block", default=0)
-    parser.add_argument("--e4End", type=int, help="end at y0,000 block", default=100)
-    parser.add_argument("--offset", type=int, help="The offset to continue", default=0)
-
+    parser.add_argument("--startId", type=int, help="The block to start scanning", default=0)
+    parser.add_argument("--endId", type=int, help="The block to end scanning", default=20000000)
     args = parser.parse_args()
-
-    # get the endpoint
     endpoint = Web3(Web3.HTTPProvider(END_POINTS[args.endpoint]))
+    start_block_number = args.startId
+    end_block_number = args.endId
+    print("start scanning from block {} to block {}".format(start_block_number, end_block_number))
+    
+    if not os.path.exists("{}".format(args.endpoint)):
+        os.makedirs("{}".format(args.endpoint))
+        if end_block_number - start_block_number < 100:
+            scan_blocks_web3(start_block_number, end_block_number, endpoint, args.endpoint)
+        else:
+            for i in range(start_block_number, end_block_number, 100):
+                scan_blocks_web3(i, i+100 if i+100 < end_block_number else end_block_number, endpoint, args.endpoint)
+            merge_csv(args.endpoint, ".", "{:08d}_to_{:08d}.csv".format(start_block_number, end_block_number))
 
-    if args.offset != 0:
-        use_offset = True
-    else:
-        use_offset = False
-
-    # create the output directory if not exists
-    if not os.path.exists("e2_{}".format(args.endpoint)):
-        os.makedirs("e2_{}".format(args.endpoint))
-
-    for e4 in range(args.e4Start, args.e4End):
-        t1 = time.time()
-
-        for i in range(args.offset if use_offset else 0,100):
-            start_block_number = args.M*1000000 + e4*10000 + i * 100
-            end_block_number = start_block_number + 100
-            scan_blocks_web3(start_block_number, end_block_number, endpoint)
-        
-        merge_csv("e2_{}".format(args.endpoint), "e4", "{:08d}_to_{:08d}.csv".format(args.M*1000000 + e4*10000 + (args.offset*100 if use_offset else 0), args.M*1000000 + e4*10000+10000))
-        print("scannered {} to {} in {} minutes".format(args.M*1000000 + e4*10000, args.M*1000000 + e4*10000+10000 , int((time.time()-t1)/60)))
-        use_offset = False
-
+if __name__ == "__main__":
+    main()
