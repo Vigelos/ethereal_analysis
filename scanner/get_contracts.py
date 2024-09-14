@@ -92,7 +92,7 @@ def main():
         else:
             for i in range(start_block_number, end_block_number, 100):
                 scan_blocks_web3(i, i+100 if i+100 < end_block_number else end_block_number, endpoint, args.endpoint)
-            merge_csv(args.endpoint, ".", "{:08d}_to_{:08d}.csv".format(start_block_number, end_block_number))
+            # merge_csv(args.endpoint, ".", "{:08d}_to_{:08d}.csv".format(start_block_number, end_block_number))
 
 if __name__ == "__main__":
     main()
