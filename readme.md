@@ -12,7 +12,9 @@ The block scanner scan all visible contracts from given Ethereum blocks. To incl
 
 ##### Installation
 - Install Dependence
-```pip install os time pandas argparse web3```
+```
+pip install os time pandas argparse web3
+```
 - Config RPC Endpoints
 
 Copy the url of you won RPC endpoint to `scanner/get_contracts.py`
@@ -42,7 +44,9 @@ This tool inspect the bytecode of a given Groth16 smart contract to see if there
 This tool has dependence on Heimdall, you need to install Heimdall first. https://github.com/linuxserver/Heimdall
 
 And the following python libraries:
-```pip install pandas argparse os pyevmasm time```
+```
+pip install pandas argparse os pyevmasm time
+```
 
 ##### Example Usage
 ```
