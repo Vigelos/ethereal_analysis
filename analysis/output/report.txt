@@ -5,7 +5,7 @@
 |
 |
 -Prototype Analysis:
-|----Contract fingerprint: QBAQC
+|----Contract fingerprint: QBAQQC
 |----Prototype name: snarkjs
 |----Prototype info: The prototype may be vulnerable due to incorrect [public_input < snark_scalar_field] check and missing [proof < prime_Q] check. For more information, please refer to https://github.com/iden3/snarkjs/pull/480
 |----Prototype address: 0xEB2952A4098e15C97E1Ce126FE479f27E2FFB40c

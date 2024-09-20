@@ -1,7 +1,7 @@
 [
   {
     "type": "function",
-    "name": "Unresolved_11479fea",
+    "name": "Unresolved_43753b4d",
     "inputs": [
       {
         "name": "arg0",
@@ -17,6 +17,26 @@
       },
       {
         "name": "arg3",
+        "type": "uint256"
+      },
+      {
+        "name": "arg4",
+        "type": "uint256"
+      },
+      {
+        "name": "arg5",
+        "type": "uint256"
+      },
+      {
+        "name": "arg6",
+        "type": "uint256"
+      },
+      {
+        "name": "arg7",
+        "type": "uint256"
+      },
+      {
+        "name": "arg8",
         "type": "uint256"
       }
     ],
