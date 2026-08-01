@@ -1,4 +1,4 @@
-> **A refined version of this code can be found at https://github.com/Vigelos/EVM-Bytecode-Execution-Simulator**
+> **A refined version of this project can be found at https://github.com/Vigelos/EVM-Bytecode-Execution-Simulator**
 
 ## Ethereum smart contract scanner and analysis
 
