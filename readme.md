@@ -1,3 +1,5 @@
+> **A refined version of this code can be found at https://github.com/Vigelos/EVM-Bytecode-Execution-Simulator**
+
 ## Ethereum smart contract scanner and analysis
 
 This is the tool developed as a part of my master thesis *Hunting Vulnerabilities in Groth16 zk-SNARK implemented by Ethereum Smart Contracts*. 
